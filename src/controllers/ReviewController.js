@@ -16,6 +16,11 @@ module.exports = {
             errors.push({error: 'Os campos obrigatórios devem ser preenchidos'});
         }
 
+        if(errors.length > 0){
+            res.status(400).send(errors);
+            return;
+        }
+
         User.findById({writer}).then((review) => {
             if(!review){
                 errors.push({error: 'Esse usuário não existe'});

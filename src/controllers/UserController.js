@@ -8,22 +8,28 @@ module.exports = {
     register: (req, res) => {
         const { email,name, password, avatar } = req.body;
 
-        const user = new User({ name, password, avatar });
-
         let errors = [];
 
-        if(!name || !password || !email){
-            errors.push({error: 'Os campos obrigatórios devem ser preenchidos'});
+        if(!name || typeof name == undefined || name == null){
+            errors.push({error: 'O nome não pode estar vazio'});
         }
-        if(!email.contains('@') && !email.contains('.com')){
-            errors.push({error: 'Email inválido'});
-        }
-        if(password.length < 6){
+        if(!password || typeof password == undefined || password == null){
+            errors.push({error: 'A senha não pode estar vazia'});
+        }else if(password.length < 6){
             errors.push({error: 'A senha deve possuir mais de 5 caracteres'});
         }
-        if(errors.length > 0){
-            res.satus(400).send(errors);
+        if(!email || typeof email == undefined || email == null){
+            errors.push({error: 'O email não pode estar vazio'});
+        }else if(!email.includes('@') || !email.includes('.com')){
+            errors.push({error: 'Email inválido'});
         }
+        
+        if(errors.length > 0){
+            res.status(400).send(errors);
+            return;
+        }
+
+        const user = new User({ email,name, password, avatar });
 
         User.findOne({ email }).then(userFind => {
             if (!userFind) {
@@ -50,6 +56,22 @@ module.exports = {
     },
     login: (req, res) => {
         const { email, password } = req.body;
+
+        let errors = [];
+
+        if(!password || typeof password == undefined || password == null){
+            errors.push({error: 'A senha não pode estar vazia'});
+        }
+        if(!email || typeof email == undefined || email == null){
+            errors.push({error: 'O email não pode estar vazio'});
+        }else if(!email.includes('@') || !email.includes('.com')){
+            errors.push({error: 'Email inválido'});
+        }
+
+        if(errors.length > 0){
+            res.status(400).send(errors);
+            return;
+        }
 
         User.findOne({ email }).then(user => {
 
