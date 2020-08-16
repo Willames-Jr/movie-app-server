@@ -6,11 +6,26 @@ const stage = require('../configs/configs')[environment];
 
 module.exports = {
     register: (req, res) => {
-        const { name, password, avatar } = req.body;
+        const { email,name, password, avatar } = req.body;
 
         const user = new User({ name, password, avatar });
 
-        User.findOne({ name }).then(userFind => {
+        let errors = [];
+
+        if(!name || !password || !email){
+            errors.push({error: 'Os campos obrigatórios devem ser preenchidos'});
+        }
+        if(!email.contains('@') && !email.contains('.com')){
+            errors.push({error: 'Email inválido'});
+        }
+        if(password.length < 6){
+            errors.push({error: 'A senha deve possuir mais de 5 caracteres'});
+        }
+        if(errors.length > 0){
+            res.satus(400).send(errors);
+        }
+
+        User.findOne({ email }).then(userFind => {
             if (!userFind) {
                 bcrypt.hash(user.password, stage.saltingRounds, (err, hash) => {
                     if (err) {
@@ -26,7 +41,7 @@ module.exports = {
                     }
                 });
             } else {
-                res.status(200).send({ message: "This username is already in use" });
+                res.status(400).send({ message: "Esse email já esta sendo usado" });
             }
         }).catch(err => {
             res.status(500).send({ error: err });
@@ -34,9 +49,9 @@ module.exports = {
 
     },
     login: (req, res) => {
-        const { name, password } = req.body;
+        const { email, password } = req.body;
 
-        User.findOne({ name }).then(user => {
+        User.findOne({ email }).then(user => {
 
             if (user) {
                 bcrypt.compare(password, user.password).then(match => {
@@ -56,7 +71,7 @@ module.exports = {
                         result.result = user;
                     } else {
                         status = 401;
-                        result.message = 'Invalid password';
+                        result.message = 'Senha inválida';
                     }
 
                     res.status(status).send(result);
@@ -65,7 +80,7 @@ module.exports = {
                     res.status(401).send({ error: err });
                 });
             } else {
-                res.status(400).send({message: 'Invalid name'});
+                res.status(400).send({message: 'Email inválido'});
             }
 
         }).catch(err => {
@@ -84,7 +99,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ message: 'You must be logged in' })
+            res.status(401).send({ message: 'Você deve estar logado com sua conta' });
         }
 
     },
@@ -102,7 +117,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ message: 'You must be logged in' })
+            res.status(401).send({ message: 'Você deve estar logado com sua conta' });
         }
     }
 }

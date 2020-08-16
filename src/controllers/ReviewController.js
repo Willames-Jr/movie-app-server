@@ -1,4 +1,5 @@
 const Review = require('../models/Review');
+const User = require('../models/User');
 const { reset } = require('nodemon');
 
 module.exports = {
@@ -9,6 +10,24 @@ module.exports = {
         const payload = req.decoded;
         const review = new Review({movie,content,writer});
 
+        let errors = [];
+
+        if(!movie || !content || !writer){
+            errors.push({error: 'Os campos obrigatórios devem ser preenchidos'});
+        }
+
+        User.findById({writer}).then((review) => {
+            if(!review){
+                errors.push({error: 'Esse usuário não existe'});
+            }
+        }).catch(err => {
+            res.status(500).send({error:err});
+        })
+
+        if(errors.length > 0){
+            res.satus(400).send(errors);
+        }
+
         if (payload.userId = writer) {
             review.save().then(review => {
                 res.status(201).send(review);
@@ -16,7 +35,7 @@ module.exports = {
                 res.send(500).send({error:err});
             });
         } else {
-            res.status(401).send({ message: 'You must be logged in' })
+            res.status(401).send({ message: 'Você deve estar logado' })
         }
     },
     index: (req,res) => {
@@ -56,10 +75,10 @@ module.exports = {
                         res.status(500).send({error: err});
                     });
                 }else{
-                    res.status(401).send({ message: 'You must be logged in' })
+                    res.status(401).send({ message: 'Você deve estar logado' })
                 }
             }else{
-                res.status(200).send({message: 'This review does not exist'});
+                res.status(400).send({message: 'Essa review não existe'});
             }
         }).catch(err => {
             res.status(500).send({error:err});
@@ -78,10 +97,10 @@ module.exports = {
                         res.status(500).send({error: err});
                     });
                 }else{
-                    res.status(401).send({ message: 'You must be logged in' })
+                    res.status(401).send({ message: 'Você deve estar logado' })
                 }
             }else{
-                res.status(200).send({message: 'This review does not exist'});
+                res.status(200).send({message: 'Essa review não exite'});
             }
         }).catch(err => {
             res.status(500).send({error:err});
