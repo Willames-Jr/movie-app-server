@@ -5,6 +5,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const routes = require('./routes/index.js');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const environment = process.env.NODE_ENV; // development
 const connUri = process.env.MONGO_LOCAL_URL;
 const stage = require('./configs/configs')[environment];
@@ -12,6 +13,7 @@ const stage = require('./configs/configs')[environment];
 const app = express();
 const router = express.Router();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true

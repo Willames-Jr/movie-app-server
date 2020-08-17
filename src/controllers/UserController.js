@@ -5,31 +5,42 @@ const environment = process.env.NODE_ENV;
 const stage = require('../configs/configs')[environment];
 
 module.exports = {
+    index: (req, res) => {
+
+        const payload = req.decoded;
+
+        User.findById(payload.userId)
+        .then(user => {
+            res.status(200).send(user);
+        }).catch(err => {
+            res.status(500).send({ error: err });
+        });
+
+    },
     register: (req, res) => {
-        const { email,name, password, avatar } = req.body;
+        const { email, name, password, avatar } = req.body;
 
         let errors = [];
 
-        if(!name || typeof name == undefined || name == null){
-            errors.push({error: 'O nome não pode estar vazio'});
+        if (!name || typeof name == undefined || name == null) {
+            errors.push({ error: 'O nome não pode estar vazio' });
         }
-        if(!password || typeof password == undefined || password == null){
-            errors.push({error: 'A senha não pode estar vazia'});
-        }else if(password.length < 6){
-            errors.push({error: 'A senha deve possuir mais de 5 caracteres'});
+        if (!password || typeof password == undefined || password == null) {
+            errors.push({ error: 'A senha não pode estar vazia' });
+        } else if (password.length < 6) {
+            errors.push({ error: 'A senha deve possuir mais de 5 caracteres' });
         }
-        if(!email || typeof email == undefined || email == null){
-            errors.push({error: 'O email não pode estar vazio'});
-        }else if(!email.includes('@') || !email.includes('.com')){
-            errors.push({error: 'Email inválido'});
-        }
-        
-        if(errors.length > 0){
-            res.status(400).send(errors);
-            return;
+        if (!email || typeof email == undefined || email == null) {
+            errors.push({ error: 'O email não pode estar vazio' });
+        } else if (!email.includes('@') || !email.includes('.com')) {
+            errors.push({ error: 'Email inválido' });
         }
 
-        const user = new User({ email,name, password, avatar });
+        if (errors.length > 0) {
+            return res.status(400).send(errors);
+        }
+
+        const user = new User({ email, name, password, avatar });
 
         User.findOne({ email }).then(userFind => {
             if (!userFind) {
@@ -55,22 +66,22 @@ module.exports = {
 
     },
     login: (req, res) => {
+
         const { email, password } = req.body;
 
         let errors = [];
 
-        if(!password || typeof password == undefined || password == null){
-            errors.push({error: 'A senha não pode estar vazia'});
+        if (!password || typeof password == undefined || password == null) {
+            errors.push({ error: 'A senha não pode estar vazia' });
         }
-        if(!email || typeof email == undefined || email == null){
-            errors.push({error: 'O email não pode estar vazio'});
-        }else if(!email.includes('@') || !email.includes('.com')){
-            errors.push({error: 'Email inválido'});
+        if (!email || typeof email == undefined || email == null) {
+            errors.push({ error: 'O email não pode estar vazio' });
+        } else if (!email.includes('@') || !email.includes('.com')) {
+            errors.push({ error: 'Email inválido' });
         }
 
-        if(errors.length > 0){
-            res.status(400).send(errors);
-            return;
+        if (errors.length > 0) {
+            return res.status(400).send(errors);
         }
 
         User.findOne({ email }).then(user => {
@@ -83,7 +94,7 @@ module.exports = {
 
                     if (match) {
 
-                        const payload = { user: user.name, userAvatar: user.avatar , userId: user._id};
+                        const payload = { user: user.name, userAvatar: user.avatar, userId: user._id };
                         const options = { expiresIn: '2d' };
                         const secret = process.env.JWT_SECRET;
                         const token = jwt.sign(payload, secret, options);
@@ -93,7 +104,7 @@ module.exports = {
                         result.result = user;
                     } else {
                         status = 401;
-                        result.message = 'Senha inválida';
+                        result.error = 'Senha inválida';
                     }
 
                     res.status(status).send(result);
@@ -102,7 +113,7 @@ module.exports = {
                     res.status(401).send({ error: err });
                 });
             } else {
-                res.status(400).send({message: 'Email inválido'});
+                res.status(400).send({ error: 'Email inválido' });
             }
 
         }).catch(err => {
@@ -121,14 +132,14 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ message: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
         }
 
     },
     update: (req, res) => {
         const { name, avatar } = req.body;
 
-        const {id} = req.params;
+        const { id } = req.params;
 
         const payload = req.decoded;
 
@@ -139,7 +150,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ message: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
         }
     }
 }

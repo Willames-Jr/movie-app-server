@@ -6,6 +6,8 @@ module.exports = (router) => {
     .delete(validateToken,controller.delete)
     .put(validateToken,controller.update);
 
+    router.route('/users')
+    .get(validateToken,controller.index);
 
     router.route('/register')
     .post(controller.register);

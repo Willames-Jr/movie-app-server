@@ -80,10 +80,10 @@ module.exports = {
                         res.status(500).send({error: err});
                     });
                 }else{
-                    res.status(401).send({ message: 'Você deve estar logado' })
+                    res.status(401).send({ error: 'Você deve estar logado' })
                 }
             }else{
-                res.status(400).send({message: 'Essa review não existe'});
+                res.status(400).send({error: 'Essa review não existe'});
             }
         }).catch(err => {
             res.status(500).send({error:err});
@@ -102,10 +102,10 @@ module.exports = {
                         res.status(500).send({error: err});
                     });
                 }else{
-                    res.status(401).send({ message: 'Você deve estar logado' })
+                    res.status(401).send({ error: 'Você deve estar logado' })
                 }
             }else{
-                res.status(200).send({message: 'Essa review não exite'});
+                res.status(200).send({error: 'Essa review não exite'});
             }
         }).catch(err => {
             res.status(500).send({error:err});
