@@ -9,4 +9,7 @@ module.exports = (router) => {
 
     router.route('/movies/top_rated')
     .get(controller.getTopMovies);
+
+    router.route('/movies/search')
+    .get(controller.searchByName);
 }
