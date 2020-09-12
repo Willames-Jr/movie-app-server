@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const MovieList = require('../models/MovieList');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const environment = process.env.NODE_ENV;
@@ -10,11 +11,11 @@ module.exports = {
         const payload = req.decoded;
 
         User.findById(payload.userId)
-        .then(user => {
-            res.status(200).send(user);
-        }).catch(err => {
-            res.status(500).send({ error: err });
-        });
+            .then(user => {
+                res.status(200).send(user);
+            }).catch(err => {
+                res.status(500).send({ error: err });
+            });
 
     },
     register: (req, res) => {
@@ -46,7 +47,6 @@ module.exports = {
             if (!userFind) {
                 bcrypt.hash(user.password, stage.saltingRounds, (err, hash) => {
                     if (err) {
-                        console.log('Error hashing user password');
                         res.status(500).send({ error: err });
                     } else {
                         user.password = hash;
@@ -58,7 +58,7 @@ module.exports = {
                     }
                 });
             } else {
-                res.status(400).send({ message: "Esse email já esta sendo usado" });
+                res.status(400).send({ message: "This email is already being used" });
             }
         }).catch(err => {
             res.status(500).send({ error: err });
