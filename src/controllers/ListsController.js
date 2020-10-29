@@ -14,7 +14,22 @@ module.exports = {
         }).catch((err) => {
             res.status(500).send({ error: err });
         });
-    },  
+    },
+    searchList: (req,res) => {
+        const payload = req.decoded;
+        const { id,list_id } = req.params;
+
+        if (payload.userId == id) {
+            MovieList.findById({ _id: list_id }).populate('creator').then((movieLists) => {
+                res.status(200).send({ results: movieLists });
+            }).catch((err) => {
+                res.status(500).send({ error: err });
+            });
+        } else {
+            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+        }
+    }
+    ,
     createList: (req, res) => {
         const { list_name } = req.body;
         const payload = req.decoded;
@@ -110,7 +125,9 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            console.log(payload.userId);
+            console.log(id)
+            res.send({ error: 'Você deve estar logado com sua conta' });
         }
     }
 }
