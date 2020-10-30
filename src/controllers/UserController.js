@@ -3,7 +3,6 @@ const MovieList = require('../models/MovieList');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const environment = process.env.NODE_ENV;
-const stage = require('../configs/configs')[environment];
 
 module.exports = {
     index: (req, res) => {
@@ -24,17 +23,17 @@ module.exports = {
         let errors = [];
 
         if (!name || typeof name == undefined || name == null) {
-            errors.push({ error: 'O nome não pode estar vazio' });
+            errors.push({ error: 'Name cannot be empty' });
         }
         if (!password || typeof password == undefined || password == null) {
-            errors.push({ error: 'A senha não pode estar vazia' });
+            errors.push({ error: 'Password cannot be empty' });
         } else if (password.length < 6) {
-            errors.push({ error: 'A senha deve possuir mais de 5 caracteres' });
+            errors.push({ error: 'Password must be longer than 5 characters' });
         }
         if (!email || typeof email == undefined || email == null) {
-            errors.push({ error: 'O email não pode estar vazio' });
+            errors.push({ error: 'Email cannot be empty' });
         } else if (!email.includes('@') || !email.includes('.com')) {
-            errors.push({ error: 'Email inválido' });
+            errors.push({ error: 'Invalid email' });
         }
 
         if (errors.length > 0) {
@@ -45,7 +44,7 @@ module.exports = {
 
         User.findOne({ email }).then(userFind => {
             if (!userFind) {
-                bcrypt.hash(user.password, stage.saltingRounds, (err, hash) => {
+                bcrypt.hash(user.password, 10, (err, hash) => {
                     if (err) {
                         res.status(500).send({ error: err });
                     } else {
@@ -72,12 +71,12 @@ module.exports = {
         let errors = [];
 
         if (!password || typeof password == undefined || password == null) {
-            errors.push({ error: 'A senha não pode estar vazia' });
+            errors.push({ error: 'Password cannot be empty' });
         }
         if (!email || typeof email == undefined || email == null) {
-            errors.push({ error: 'O email não pode estar vazio' });
+            errors.push({ error: 'Email cannot be empty' });
         } else if (!email.includes('@') || !email.includes('.com')) {
-            errors.push({ error: 'Email inválido' });
+            errors.push({ error: 'Invalid email' });
         }
 
         if (errors.length > 0) {
@@ -104,7 +103,7 @@ module.exports = {
                         result.result = user;
                     } else {
                         status = 401;
-                        result.error = 'Senha inválida';
+                        result.error = 'invalid password';
                     }
 
                     res.status(status).send(result);
@@ -113,7 +112,7 @@ module.exports = {
                     res.status(401).send({ error: err });
                 });
             } else {
-                res.status(400).send({ error: 'Email inválido' });
+                res.status(400).send({ error: 'Invalid email' });
             }
 
         }).catch(err => {
@@ -132,7 +131,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'You must be logged in with your account' });
         }
 
     },
@@ -150,7 +149,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'You must be logged in with your account' });
         }
     }
 }

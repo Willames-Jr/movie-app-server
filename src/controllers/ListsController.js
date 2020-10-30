@@ -1,9 +1,5 @@
 const User = require('../models/User');
 const MovieList = require('../models/MovieList');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const environment = process.env.NODE_ENV;
-const stage = require('../configs/configs')[environment];
 
 module.exports = {
     index: (req, res) => {
@@ -26,10 +22,9 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'You must be logged in with your account' });
         }
-    }
-    ,
+    },
     createList: (req, res) => {
         const { list_name } = req.body;
         const payload = req.decoded;
@@ -43,7 +38,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'You must be logged in with your account' });
         }
     },
     updateList: (req, res) => {
@@ -54,7 +49,7 @@ module.exports = {
         let errors = [];
 
         if (!name || typeof name == undefined || name == null) {
-            errors.push({ error: 'O nome não pode estar vazio' });
+            errors.push({ error: 'Name cannot be empty' });
         }
 
         if (errors.length > 0) {
@@ -68,7 +63,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'You must be logged in with your account' });
         }
     },
     deleteList: (req,res) => {
@@ -83,7 +78,7 @@ module.exports = {
                 res.status(500).send({error:err});
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'You must be logged in with your account' });
         }
     },
     addMovie: (req, res) => {
@@ -104,7 +99,7 @@ module.exports = {
                 res.status(500).send({ error: err });
             });
         } else {
-            res.status(401).send({ error: 'Você deve estar logado com sua conta' });
+            res.status(401).send({ error: 'You must be logged in with your account' });
         }
     },
     deleteMovie: (req,res) => {
@@ -127,7 +122,7 @@ module.exports = {
         } else {
             console.log(payload.userId);
             console.log(id)
-            res.send({ error: 'Você deve estar logado com sua conta' });
+            res.send({ error: 'You must be logged in with your account' });
         }
     }
 }

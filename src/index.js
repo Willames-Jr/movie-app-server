@@ -6,9 +6,10 @@ const bodyParser = require('body-parser');
 const routes = require('./routes/index.js');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const environment = process.env.NODE_ENV; // development
-const connUri = process.env.MONGO_LOCAL_URL;
-const stage = require('./configs/configs')[environment];
+const localConnUri = process.env.MONGO_LOCAL_URL;
+const serverConnUri = process.env.MONGO_URL;
+const environment = process.env.NODE_ENV;
+const databaseUri = environment === 'development' ? localConnUri : serverConnUri;
 
 const app = express();
 const router = express.Router();
@@ -20,21 +21,22 @@ app.use(bodyParser.urlencoded({
 }));
 
 mongoose.Promise = global.Promise;
-mongoose.connect(connUri, { useNewUrlParser: true }).then(() => {
-    console.log('Connected to database');
+mongoose.connect(databaseUri, { useNewUrlParser: true }).then(() => {
+    console.log(`Connected to database ${databaseUri}`);
+
 }).catch((err) => {
-    console.log('Error on conecting to database');
+    console.log('Error on connecting to database');
     console.log('And error is this: ' + err);
 });
+app.use(logger('dev'));
+
 
 app.use('/api/v1', routes(router));
 
-if (environment !== 'production') {
-    app.use(logger('dev'));
-}
 
-app.listen(`${stage.port}`, () => {
-    console.log(`Server now listening at localhost:${stage.port}`);
+
+app.listen(process.env.PORT || 5000, () => {
+    console.log('Server now is running');
 });
 
 module.exports = app;
