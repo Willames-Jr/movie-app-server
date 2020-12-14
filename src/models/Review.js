@@ -6,6 +6,16 @@ const reviewSchema = new Schema({
         type: String,
         required: true
     },
+    rate:{
+        type: Number,
+        required: true,
+        min: 0.5,
+        max: 10
+    },
+    title:{
+        type: String,
+        required: true
+    },
     content:{
         type: String,
         required: true
