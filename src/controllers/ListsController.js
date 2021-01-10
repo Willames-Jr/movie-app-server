@@ -67,7 +67,7 @@ module.exports = {
         }
     },
     deleteList: (req,res) => {
-        const { list_id} = req.body;
+        const { list_id } = req.body;
         const { id } = req.params;
         const payload = req.decoded;
 
